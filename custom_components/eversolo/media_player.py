@@ -169,10 +169,10 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         output_index = input_output_state.get("outputIndex", -1)
         if output_index < 0 or output_index >= len(outputs):
-            LOGGER.debug("Input index %s is out of range", output_index)
+            LOGGER.debug("Output index %s is out of range", output_index)
             return None
 
-        return list(outputs.values())[output_index]
+        return list(outputs)[output_index]
 
     @property
     def sound_mode_list(self):
