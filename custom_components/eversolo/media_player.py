@@ -17,6 +17,7 @@ from .entity import EversoloEntity
 SUPPORT_FEATURES = (
     MediaPlayerEntityFeature.TURN_OFF
     | MediaPlayerEntityFeature.SELECT_SOURCE
+    | MediaPlayerEntityFeature.SELECT_OUTPUT
     | MediaPlayerEntityFeature.PLAY
     | MediaPlayerEntityFeature.PAUSE
     | MediaPlayerEntityFeature.VOLUME_SET
@@ -340,6 +341,26 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
             raise ValueError(f"Source {source} not found")
 
         await self.coordinator.client.async_set_input(index, tag)
+
+    async def async_select_output(self, output):
+        """Set the output."""
+        outputs = self.coordinator.data.get("input_output_state", {}).get(
+            "transformed_outputs", None
+        )
+
+        if outputs is None:
+            return
+
+        try:
+            index, tag = next(
+                (index, key)
+                for index, key in enumerate(outputs)
+                if outputs[key] == output or key == output
+            )
+        except StopIteration:
+            raise ValueError(f"Output {output} not found")
+
+        await self.coordinator.client.async_set_output(index, tag)
 
     async def async_media_play_pause(self):
         """Simulate play pause Media Player."""
