@@ -151,6 +151,41 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
         return list(sources.values())
 
     @property
+    def output(self):
+        """Return the current output."""
+        input_output_state = self.coordinator.data.get("input_output_state", None)
+
+        if input_output_state is None:
+            return None
+
+        outputs = self.coordinator.data.get("input_output_state", {}).get(
+            "transformed_outputs", None
+        )
+
+        if outputs is None:
+            return None
+
+        output_index = input_output_state.get("outputIndex", -1)
+        if output_index < 0 or output_index >= len(outputs):
+            LOGGER.debug("Input index %s is out of range", output_index)
+            return None
+
+        return list(outputs.values())[output_index]
+
+    @property
+    def output_list(self):
+        """List of available outputs."""
+        # NoneType object has no values
+        outputs = self.coordinator.data.get("input_output_state", {}).get(
+            "transform_outputs", None
+        )
+
+        if outputs is None:
+            return None
+
+        return list(outputs.values())
+
+    @property
     def media_title(self):
         """Title of current playing media."""
         music_control_state = self.coordinator.data.get("music_control_state", None)
