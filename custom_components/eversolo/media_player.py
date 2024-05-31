@@ -17,7 +17,6 @@ from .entity import EversoloEntity
 SUPPORT_FEATURES = (
     MediaPlayerEntityFeature.TURN_OFF
     | MediaPlayerEntityFeature.SELECT_SOURCE
-    | MediaPlayerEntityFeature.SELECT_OUTPUT
     | MediaPlayerEntityFeature.PLAY
     | MediaPlayerEntityFeature.PAUSE
     | MediaPlayerEntityFeature.VOLUME_SET
