@@ -17,6 +17,7 @@ from .entity import EversoloEntity
 SUPPORT_FEATURES = (
     MediaPlayerEntityFeature.TURN_OFF
     | MediaPlayerEntityFeature.SELECT_SOURCE
+    | MediaPlayerEntityFeature.SELECT_SOUND_MODE
     | MediaPlayerEntityFeature.PLAY
     | MediaPlayerEntityFeature.PAUSE
     | MediaPlayerEntityFeature.VOLUME_SET
@@ -149,8 +150,10 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         return list(sources.values())
 
+
+    #defining output as sound_mode as HA only supports one of each properties
     @property
-    def output(self):
+    def sound_mode(self):
         """Return the current output."""
         input_output_state = self.coordinator.data.get("input_output_state", None)
 
@@ -172,7 +175,7 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
         return list(outputs.values())[output_index]
 
     @property
-    def output_list(self):
+    def sound_mode_list(self):
         """List of available outputs."""
         # NoneType object has no values
         outputs = self.coordinator.data.get("input_output_state", {}).get(
@@ -376,8 +379,9 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         await self.coordinator.client.async_set_input(index, tag)
 
-    async def async_select_output(self, output):
+    async def async_select_sound_mode(self, sound_mode):
         """Set the output."""
+        output = sound_mode
         outputs = self.coordinator.data.get("input_output_state", {}).get(
             "transformed_outputs", None
         )
