@@ -136,6 +136,8 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
             return None
 
         return list(sources.values())[input_index]
+        """Return the current output."""
+
 
     @property
     def source_list(self):
@@ -150,7 +152,7 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         return list(sources.values())
 
-
+        
     #defining output as sound_mode as HA only supports one of each properties
     @property
     def sound_mode(self):
@@ -171,21 +173,25 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
         if output_index < 0 or output_index >= len(outputs):
             LOGGER.debug("Output index %s is out of range", output_index)
             return None
+        outputs_dic = {item['tag']: item['title'] for item in outputs}
 
-        return list(outputs)[output_index]
+        return list(outputs_dic.values())[output_index]
 
     @property
     def sound_mode_list(self):
         """List of available outputs."""
         # NoneType object has no values
+
         outputs = self.coordinator.data.get("input_output_state", {}).get(
-            "transform_outputs", None
+            "transformed_outputs", None
         )
 
         if outputs is None:
             return None
 
-        return list(outputs.values())
+        outputs_dic = {item['tag']: item['title'] for item in outputs}
+        
+        return list(outputs_dic.values())
 
     @property
     def media_title(self):
@@ -386,17 +392,22 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
             "transformed_outputs", None
         )
 
+
         if outputs is None:
             return
 
+        outputs_dic = {item['tag']: item['title'] for item in outputs}
+
+        LOGGER.exception(["async_select_sound_mode", outputs_dic, output])
         try:
             index, tag = next(
                 (index, key)
-                for index, key in enumerate(outputs)
-                if outputs[key] == output or key == output
+                for index, key in enumerate(outputs_dic)
+                if outputs_dic[key] == output or key == output
             )
         except StopIteration:
             raise ValueError(f"Output {output} not found")
+
 
         await self.coordinator.client.async_set_output(index, tag)
 
